@@ -1,3 +1,5 @@
+const menuRoutes = require("./src/routes/menuRoutes");
+const restaurantRoutes = require("./src/routes/restaurantRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const express = require("express");
 const cors = require("cors");
@@ -11,6 +13,8 @@ console.log("Starting server...");
 
 app.use(cors());
 app.use(express.json());
+app.use("/restaurants", restaurantRoutes);
+app.use("/menu", menuRoutes);
 app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {

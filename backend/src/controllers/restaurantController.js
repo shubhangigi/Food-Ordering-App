@@ -1,33 +1,41 @@
-// Import the PostgreSQL connection
+// Import PostgreSQL connection
 const pool = require("../config/db");
 
 /*
-==========================================
+==================================================
 GET ALL RESTAURANTS
-==========================================
+==================================================
 
 Purpose:
-Fetch every restaurant from the database.
+Fetch all restaurants from the database.
 */
 
 const getAllRestaurants = async (req, res) => {
 
     try {
 
-        // Execute SQL query
+        // Fetch all restaurants
         const result = await pool.query(
-            "SELECT * FROM restaurants ORDER BY id"
+
+            `SELECT *
+             FROM restaurants
+             ORDER BY id`
+
         );
 
-        // Send the data back as JSON
+        // Return restaurants
         res.status(200).json(result.rows);
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error(error);
 
         res.status(500).json({
-            message: "Failed to fetch restaurants"
+
+            message: error.message
+
         });
 
     }
@@ -35,37 +43,79 @@ const getAllRestaurants = async (req, res) => {
 };
 
 
+
 /*
-==========================================
+==================================================
 CREATE RESTAURANT
-==========================================
+==================================================
 
 Purpose:
-Insert a new restaurant into PostgreSQL.
+Insert a new restaurant into the database.
 */
 
 const createRestaurant = async (req, res) => {
 
     try {
 
-        // Read values sent from React/Postman
-        const { name, location } = req.body;
+        // Read data from Postman / React
+        const {
 
-        // Insert data into PostgreSQL
+            owner_id,
+            restaurant_name,
+            description,
+            phone,
+            email,
+            cuisine,
+            opening_time,
+            closing_time,
+            image_url,
+            is_active
+
+        } = req.body;
+
+
+        // Insert restaurant into database
         const result = await pool.query(
 
             `INSERT INTO restaurants
-            (name, location)
+            (
+                owner_id,
+                restaurant_name,
+                description,
+                phone,
+                email,
+                cuisine,
+                opening_time,
+                closing_time,
+                image_url,
+                is_active
+            )
 
-            VALUES($1,$2)
+            VALUES
+            (
+                $1,$2,$3,$4,$5,$6,$7,$8,$9,$10
+            )
 
             RETURNING *`,
 
-            [name, location]
+            [
+
+                owner_id,
+                restaurant_name,
+                description,
+                phone,
+                email,
+                cuisine,
+                opening_time,
+                closing_time,
+                image_url,
+                is_active
+
+            ]
 
         );
 
-        // Return the inserted row
+
         res.status(201).json({
 
             message: "Restaurant Created Successfully",
@@ -76,13 +126,13 @@ const createRestaurant = async (req, res) => {
 
     }
 
-    catch(error){
+    catch (error) {
 
         console.error(error);
 
         res.status(500).json({
 
-            message:"Unable to create restaurant"
+            message: error.message
 
         });
 
@@ -92,7 +142,12 @@ const createRestaurant = async (req, res) => {
 
 
 
-// Export both functions
+/*
+==================================================
+EXPORT FUNCTIONS
+==================================================
+*/
+
 module.exports = {
 
     getAllRestaurants,
