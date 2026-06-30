@@ -10,15 +10,57 @@ Purpose:
 Fetch all orders from the database.
 */
 
+/*
+==================================================
+GET ALL ORDERS
+==================================================
+
+Purpose:
+Fetch complete order details by joining
+multiple tables together.
+*/
+
 const getAllOrders = async (req, res) => {
 
     try {
 
         const result = await pool.query(
 
-            `SELECT *
-             FROM orders
-             ORDER BY id`
+            `SELECT
+
+                o.id AS order_id,
+
+                u.name AS customer,
+
+                r.restaurant_name,
+
+                m.item_name,
+
+                oi.quantity,
+
+                oi.price,
+
+                o.total_amount,
+
+                o.status,
+
+                o.order_time
+
+            FROM orders o
+
+            JOIN users u
+            ON o.customer_id = u.id
+
+            JOIN restaurants r
+            ON o.restaurant_id = r.id
+
+            JOIN order_items oi
+            ON o.id = oi.order_id
+
+            JOIN menu_items m
+            ON oi.menu_item_id = m.id
+
+            ORDER BY o.id`
 
         );
 
@@ -32,7 +74,7 @@ const getAllOrders = async (req, res) => {
 
         res.status(500).json({
 
-            message: error.message
+            message:error.message
 
         });
 
